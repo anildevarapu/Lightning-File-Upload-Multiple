@@ -1,6 +1,9 @@
 <aura:component implements="force:hasRecordId,force:lightningQuickActionWithoutHeader" controller="AttachmentUploadCon">   
     <aura:attribute name="rows" type="List" default="[]" />
-    <aura:handler name="init" value="{!this}" action="{!c.getAttachments}"/>
+	<aura:attribute name="objAPIName" type="string" default="Account" access="GLOBAL"/> 
+	<aura:attribute name="RecID" type="string" access="GLOBAL"/> 
+	
+    <aura:handler name="init" value="{!this}" action="{!c.initComp}"/>
     <div style="width:100%;">
     	<div style="float:left;width:70%;font-size: 20px;"><b>Upload Attachments</b></div>
         <div style="float:left;width:30%;text-align:center;"><lightning:button iconPosition="left" iconName="action:new" variant="brand" onclick="{!c.addRow}" /></div>
@@ -18,21 +21,18 @@
                             {!row.rowNum}.
                         </td>
                         <td data-label="Attachment">
-                            <lightning:input class="{!row.rowNum - 1}" aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" name="{!row.fileId}" label="" multiple="false"/>
+                            <lightning:input class="{!row.rowNum - 1}" aura:id="fileId" onchange="{!c.handleFilesChange}" type="file" name="{!row.fileId}" label=" " multiple="false"/>
                             {!row.fileName}
                             <!--use aura:if for show-hide the loading spinner image--> 
                         </td>
-                        <td class="Name-td">
-                            <ui:inputText blur="{!c.updateName}" updateOn="keyup" value="{!row.cDocName}" class="{!row.fileId}" keyup="{!c.clearError}" labelClass="{!row.rowNum - 1}"/><br/>
-                            <span class="error-msg">{!row.cDocError}</span>
-                        </td>
+                       
                         <td data-label="Action" class="slds-align_absolute-center action-col">
                             <aura:if isTrue="{!row.showLoadingSpinner}">
                                 <div style="position: absolute;margin-left: -38%;" class="slds-text-body_small slds-text-color_error">
                                     <img src="/auraFW/resources/aura/images/spinner.gif" class="spinner-img" alt="Loading"/>'
                                 </div>
                             </aura:if>
-                            <lightning:button iconPosition="left" iconName="action:delete" variant="destructive" name="{!row.rowNum - 1}" class="{!row.cDocId}" onclick="{!c.deleteRow}" />
+                            <lightning:button iconPosition="left" iconName="action:delete" variant="destructive" name="{!row.rowNum - 1}" class="{!'atcID_'+row.fileId}" onclick="{!c.deleteRow}" />
                         </td>
                     </tr>
                 </aura:iteration>
