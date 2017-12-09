@@ -1,89 +1,30 @@
 ({
-    getAttachments : function(component, event, helper)
-    {
-        var action = component.get("c.loadAttachments");
-        action.setParams({
-            communityId: component.get("v.recordId"),
-        });
- 
-        action.setCallback(this, function(response) {
-            
-            var state = response.getState();
-            console.log('state..!',state);
-            if (state === "SUCCESS") 
-            {
-                var cAttachments = response.getReturnValue();
-                console.log('attachments..!',cAttachments);
-                var rows = [];
-                for(var i = 0;i<cAttachments.length;i++)
-                {
-                    var row = {};
-                    row.rowNum = i+1;
-                    row.fileId = cAttachments[i].attachmentId;
-                    row.fileName = cAttachments[i].attachmentName;
-                    row.cDocName = cAttachments[i].cAttachmentName;
-                    row.cDocId = cAttachments[i].cAttachmentId;
-                    row.cDocError = '';
-                    row.showLoadingSpinner = false;
-                	rows.push(row);
-                }
-                if(cAttachments.length == 0)
-                    rows.push({'rowNum':1,fileId:'','cDocName':'Attachment - 1','cDocError':'','cDocId':'','fileName':'No File Selected..','showLoadingSpinner':false});
-                component.set("v.rows",rows);
-            }
-            else
-            {
-            	alert('Something went wrong.');
-            }
-        });
-        $A.enqueueAction(action);
-    },
-    updateName : function(component, event, helper) {
-		  var attachmentId = event.getSource().get('v.class');
-          var communityAttachmentName = event.getSource().get('v.value');
-    
-          if(communityAttachmentName.length >0 && attachmentId.length >0)
-          {
-              var action = component.get("c.updateCommunityAttachmentName");
-                action.setParams({
-                    attachmentId: attachmentId,
-                    communityAttachmentName:communityAttachmentName
-                });
-         
-                action.setCallback(this, function(response) {
-                    var state = response.getState();
-                    console.log('state..!',state);
-                    if (state === "SUCCESS"){
-                        console.log('Name update..!',state);
-                    }
-                    else{
-                        alert('Something went wrong.');
-                    }
-                });
-                $A.enqueueAction(action);
-          }
-    },
+	initComp: function(component, event, helper) {
+		
+		helper.getAttachments(component, event);
+	
+	},
     deleteRow: function(component, event, helper) {
         var index = event.getSource().get('v.name');
-        var recId = event.getSource().get('v.class');
-        var rows = component.get("v.rows");
-        rows.splice(index, 1);
-        for(var i = 0;i<rows.length;i++)
+        var clsName = event.getSource().get('v.class');
+
+		
+		console.log('recId@ delete', clsName.split('atcID_'));
+        
+		var clasAray = !$A.util.isEmpty(clsName) ? clsName.split('atcID_') : [];
+		var recId = !$A.util.isEmpty(clasAray) ? clasAray[1] : '';
+        if(!$A.util.isEmpty(recId))
         {
-            rows[i].rowNum = i+1;
-        }
-        component.set("v.rows",rows);
-        if(recId != '')
-        {
+            alert(recId);
             var action = component.get("c.deleteAttachment");
-            action.setParams({
-                "communityAttachmentId": recId
-            });
+            action.setParams({"attchId": recId});
      
             action.setCallback(this, function(response) {
                 var state = response.getState();
                 console.log('state..!',state);
-                if (state === "SUCCESS"){}
+                if (state === "SUCCESS"){
+                    helper.getAttachments(component, event);
+                }
                 else
                 {
                     alert('Something went wrong.');
@@ -102,13 +43,14 @@
     handleFilesChange: function(component, event, helper) {
         //alert();
         if (event.getSource().get("v.files").length > 0) {
+            console.log('---@handleFilesChange---');
             helper.uploadHelper(component, event);
         }        
     },
     addRow : function(component, event, helper) {
     	var rows = component.get("v.rows");
         var newRow = rows.length+1;
-        rows.push({'rowNum':rows.length+1,'fileId':'','cDocName':'Attachment - '+newRow,'cDocError':'','cDocId':'','fileName':'No File Selected..','showLoadingSpinner':false});
+        rows.push({'rowNum':rows.length+1,'fileId':'','cDocError':'','parentId':'','fileName':'No File Selected..','showLoadingSpinner':false});
         component.set("v.rows",rows);
     }
 })
