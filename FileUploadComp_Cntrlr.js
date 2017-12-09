@@ -15,7 +15,7 @@
 		var recId = !$A.util.isEmpty(clasAray) ? clasAray[1] : '';
         if(!$A.util.isEmpty(recId))
         {
-            alert(recId);
+           
             var action = component.get("c.deleteAttachment");
             action.setParams({"attchId": recId});
      
