@@ -1,0 +1,10 @@
+.THIS .action-col button{
+    margin:21%;
+    cursor:pointer;
+}
+.THIS .error-msg{
+    color:#a94442;
+}
+.THIS .Name-td input{
+    border-left: 5px solid #a94442;
+}
